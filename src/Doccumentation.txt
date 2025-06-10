@@ -1,0 +1,48 @@
+// document.querySelector('#app').innerHTML = `
+//   <div>
+//     <a href="https://vite.dev" target="_blank">
+//       <img src="${viteLogo}" class="logo" alt="Vite logo" />
+//     </a>
+//     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
+//       <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
+//     </a>
+//     <h1>Hello Vite!</h1>
+//     <div class="card">
+//       <button id="counter" type="button"></button>
+//     </div>
+//     <p class="read-the-docs">
+//       Click on the Vite logo to learn more
+//     </p>
+//   </div>
+// `
+
+// setupCounter(document.querySelector('#counter'))
+
+// const form = document.getElementById("loginForm");
+// const msg = document.getElementById("message");
+// const input = document.getElementById("password");
+
+// form.addEventListener("submit", (e) => {
+//   e.preventDefault();
+
+//   const email = document.getElementById("email").value;
+//   const password = document.getElementById("password").value;
+
+//   fetch(`http://localhost:3000/users?email=${email}&password=${password}`)
+//     .then((response) => response.json())
+//     .then((users) => {
+//       if (users.length > 0) {
+//         msg.textContent = "Connexion réussie ✅";
+//         msg.style.color = "green";
+//         input.style.borderColor = "green";
+//       } else {
+//         msg.textContent = "Identifiants invalides ❌";
+//         msg.style.color = "red";
+//         input.style.borderColor = "red";
+//       }
+//     })
+//     .catch((err) => {
+//       msg.textContent = "Erreur serveur...";
+//       msg.style.color = "orange";
+//     });
+// });
