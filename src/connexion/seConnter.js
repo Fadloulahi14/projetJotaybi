@@ -75,7 +75,7 @@ const formulaireConnexion = createElement('form', {
         const code = document.querySelector('#inputmdp').value.trim()
 
       try{
-        const response = await fetch('http://localhost:3000/utilisateurs');
+        const response = await fetch('https://backendjotaybi.onrender.com/utilisateurs');
         const utilisateurs = await response.json();
 
         
