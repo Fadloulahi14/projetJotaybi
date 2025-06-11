@@ -16,7 +16,9 @@
 //   </div>
 // `
 
+
 // setupCounter(document.querySelector('#counter'))
+
 
 // const form = document.getElementById("loginForm");
 // const msg = document.getElementById("message");
@@ -46,3 +48,78 @@
 //       msg.style.color = "orange";
 //     });
 // });
+
+
+//  document.addEventListener('DOMContentLoaded',() =>{
+//   const form = document.querySelector('#inscription')
+
+//   form.addEventListener('submit', async(e)=>{
+//     e.preventDefault; 
+
+//     const input = document.querySelectorAll('input'); 
+//     const nom = input[0].value.trim();
+//     const prenom = input[1].value.trim();
+//     const telephone = input[2].value.trim();
+//     const mdp = input[3].value.trim(); 
+
+
+//     const nouvelUtilisateur = {
+//       nom, prenom, telephone, mdp
+//     }
+
+//     try{
+//       const response = await fetch (`${urllocal}/utilisateurs`, {
+//         method: "post", 
+//         headers:{
+//           "content-type": "application/json", 
+//           "accept":"application/json", 
+//         },
+//         body: JSON.stringify(nouvelUtilisateur)
+//       }); 
+//       if(response.ok){
+//         console.log("donner yi dougouna ");
+        
+//       }else{
+//         console.log("donner meunoul dougou parceue matoule")
+//       }
+
+
+//     }catch(error){
+//       console.log("erreur bi si serveur bi la neikkk ")
+
+//     }
+
+//   })
+
+
+// })
+// const listeConversations = createElement("div", {
+//   class: ["flex-1", "overflow-y-auto"]
+// }, conversations.map(conv => 
+//   createElement("div", {
+//     class: ["flex", "items-center", "gap-3", "px-4", "py-3", "hover:bg-gray-50", "cursor-pointer", "border-b", "border-gray-100"]
+//   }, [
+//     createElement("div", {
+//       class: ["w-12", "h-12", "bg-gray-300", "rounded-full", "flex-shrink-0"]
+//     }),
+//     createElement("div", { class: ["flex-1", "min-w-0"] }, [
+//       createElement("div", { class: ["flex", "justify-between", "items-center"] }, [
+//         createElement("h3", { 
+//           class: ["font-semibold", "text-gray-900", "truncate"] 
+//         }, [conv.nom]),
+//         createElement("div", { class: ["flex", "items-center", "gap-1"] }, [
+//           conv.pin && createElement("i", { class: ["fa-solid", "fa-thumbtack", "text-gray-400", "text-xs", "rotate-45"] }, []),
+//           createElement("span", { class: ["text-xs", "text-gray-500"] }, [conv.temps])
+//         ])
+//       ]),
+//       createElement("div", { class: ["flex", "justify-between", "items-center", "mt-1"] }, [
+//         createElement("p", { 
+//           class: ["text-sm", "text-gray-600", "truncate", "max-w-[200px]"] 
+//         }, [conv.message || ""]),
+//         conv.unread && createElement("div", {
+//           class: ["bg-green-500", "text-white", "text-xs", "rounded-full", "w-5", "h-5", "flex", "items-center", "justify-center", "flex-shrink-0"]
+//         }, ["1"])
+//       ])
+//     ])
+//   ])
+// ));

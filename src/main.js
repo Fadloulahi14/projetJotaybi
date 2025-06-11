@@ -19,6 +19,9 @@ const app = createElement("div", {
 
 // , barLogo, grandBr, pgrandBr
 
+
+
+
 document.body.append(app);
 
 const form = document.querySelector("#inscription");

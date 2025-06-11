@@ -2,6 +2,7 @@ import { createElement } from "../compenent";
 import {affichage, affichageconnexion} from "../main.js";
 
 
+
 const navigationTabs = createElement('div', {
   class: ['flex', 'bg-gray-100', 'rounded-lg', 'p-1', 'mb-6']
 }, [
@@ -28,3 +29,4 @@ const navigationTabs = createElement('div', {
 ]);
 
 export {navigationTabs}
+

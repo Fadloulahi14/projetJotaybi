@@ -1,7 +1,6 @@
 import { createElement } from "../compenent";
 import {conteneur} from "../main.js";
-
-
+import {  basse_url } from "../validateur/fonctionValidate.js";
 const formulaireConnexion = createElement('form', {
   class: ['space-y-6', 'w-full'], 
   id:"connexion"
@@ -13,7 +12,7 @@ const formulaireConnexion = createElement('form', {
     }, ['Numéro de téléphone']),
     createElement('input', {
       type: 'tel',
-      placeholder: '+221 XX XXX XX XX',
+      placeholder: '+221 77 000 00 00',
       id: 'inputnum',
       class: [
         'w-full', 'px-4', 'py-3', 'border', 'border-gray-300', 'rounded-lg',
@@ -75,7 +74,8 @@ const formulaireConnexion = createElement('form', {
         const code = document.querySelector('#inputmdp').value.trim()
 
       try{
-        const response = await fetch('https://backendjotaybi.onrender.com/utilisateurs');
+
+        const response = await fetch(`${basse_url}/utilisateurs`);
         const utilisateurs = await response.json();
 
         
@@ -83,6 +83,7 @@ const formulaireConnexion = createElement('form', {
           u.telephone === numero && u.mdp === code
         );
         if(utilisateurTrouver){
+          localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
           conteneur()
          
 
@@ -105,3 +106,4 @@ const formulaireConnexion = createElement('form', {
 ]);
 
 export{formulaireConnexion}
+// export{utilisateurTrouver}

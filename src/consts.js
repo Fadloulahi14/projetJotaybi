@@ -1,11 +1,12 @@
 // Messages de la conversation
 const messagesConversation = [
   { type: 'image', src: '/api/placeholder/200/150', temps: '12:39' },
-  // { type: 'text', contenu: 'do nittou dara !!!😂', temps: '12:41', isMe: false },
-  // { type: 'text', contenu: '😂😂😂', temps: '12:40', isMe: true },
-  // { type: 'text', contenu: 'Wa louma deff', temps: '12:40', isMe: true },
-  // { type: 'text', contenu: 'guiss naa sa message bi', temps: '12:42', isMe: false },
-  // { type: 'text', contenu: 'damala bayyi si bir', temps: '12:41', isMe: false },
+  { type: 'text', contenu: 'do nittou dara !!!😂', temps: '12:41', isMe: false },
+  { type: 'text', contenu: '😂😂😂', temps: '12:40', isMe: true },
+  { type: 'text', contenu: 'Wa louma deff', temps: '12:40', isMe: true },
+  { type: 'text', contenu: 'guiss naa sa message bi', temps: '12:42', isMe: false },
+  { type: 'text', contenu: 'damala bayyi si bir', temps: '12:41', isMe: false },
+
   { 
     type: 'text', 
     contenu: 'röitissez-moi en vous basant sur mes précédents messages, sans pitié, sans filtre, directement à l\'âme', 
@@ -13,6 +14,7 @@ const messagesConversation = [
     isMe: false,
     jour: 'LUNDI' 
   },
+
   { 
     type: 'link', 
     contenu: 'github.com', 
@@ -37,13 +39,6 @@ const conversations = [
   { nom: "Fadloulahi🥰✅✅ (vous)", message: "https://whatsapp-o-gam.vercel.app/", temps: "Hier", pin: true },
   
 ];
-
-// const COLORS = {
-//     deleted : "red",
-//     done: "blue",
-//     done_deleted: "white",
-//     other : "white"
-// }
 
 
 const style = {
