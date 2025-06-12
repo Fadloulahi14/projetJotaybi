@@ -83,69 +83,118 @@ const formulaireInscription = createElement('form', {
       'duration-200', 'focus:outline-none', 'focus:ring-2',
       'focus:ring-green-500', 'focus:ring-offset-2'
     ], 
-    onclick:async(e)=>{
-    e.preventDefault(); 
+    onclick: async(e) => {
+    e.preventDefault();
+    clearErrors();
 
-    const form = document.querySelectorAll('input'); 
-    const nom = document.querySelector('#nom').value.trim();
-    const prenom = document.querySelector('#prenom').value.trim();
-    const telephone = document.querySelector('#tel').value.trim();
-    const mdp = document.querySelector('#mdp').value.trim();
-    const contact = [];
-    const mssge = []; 
-    const group =[];
+    const data = {
+      nom: document.querySelector('#nom').value.trim(),
+      prenom: document.querySelector('#prenom').value.trim(),
+      telephone: document.querySelector('#tel').value.trim(),
+      mdp: document.querySelector('#mdp').value.trim(),
+      contact: [],
+      mssge: [],
+      group: []
+    };
 
-
-    const nouvelUtilisateur = {
-      nom, prenom, telephone, mdp, contact,mssge,group
+    const errors = validateInscription(data);
+    
+    if (Object.keys(errors).length > 0) {
+      Object.keys(errors).forEach(field => {
+        showError(field === 'telephone' ? 'tel' : field, errors[field]);
+      });
+      return;
     }
 
-    try{
+    try {
+      // Vérifier si le numéro existe déjà
+      const responseserveur = await fetch(`${basse_url}/utilisateurs?telephone=${data.telephone}`);
+      const utilisateurexist = await responseserveur.json();
 
-      const responseserveur = await fetch (`${basse_url}/utilisateurs?telephone=${telephone}`);
-      const utilisateurexist = await responseserveur.json(); 
-
-      if(utilisateurexist.length>0){
-        console.log('ce numero exist dejaa')
+      if (utilisateurexist.length > 0) {
+        showError('tel', 'Ce numéro est déjà utilisé');
         return;
-      }else{
-        console.log('ce num nexister pas encores inscription valide')
       }
 
-
-
-      const response = await fetch (`${urllocal}/utilisateurs`, {
-        method: "post", 
-        headers:{
-          "content-type": "application/json", 
-          "accept":"application/json", 
+      const response = await fetch(`${basse_url}/utilisateurs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify(nouvelUtilisateur)
-      }); 
-      if(response.ok){
-        console.log("donner yi dougouna ");
-        
+        body: JSON.stringify(data)
+      });
 
-        return
-        
-      }else{
-        console.log("donner meunoul dougou parceue matoule")
+      if (response.ok) {
+        // Rediriger vers la connexion
+        window.location.href = '/connexion';
+      } else {
+        showError('nom', "Erreur lors de l'inscription");
       }
-
-
-    }catch(error){
-      console.log("erreur bi si serveur bi la neikkk ")
-
+    } catch(error) {
+      showError('nom', "Erreur de connexion au serveur");
     }
-
   }
   }, ['S\'inscrire'])
 ]);
 
+function validateInscription(data) {
+  const errors = {};
+  
+  if (!data.nom) {
+    errors.nom = "Le nom est obligatoire";
+  } else if (data.nom.length < 2) {
+    errors.nom = "Le nom doit contenir au moins 2 caractères";
+  }
 
+  if (!data.prenom) {
+    errors.prenom = "Le prénom est obligatoire";
+  } else if (data.prenom.length < 2) {
+    errors.prenom = "Le prénom doit contenir au moins 2 caractères";
+  }
 
+  if (!data.telephone) {
+    errors.telephone = "Le numéro de téléphone est obligatoire";
+  } else if (!/^[0-9]{9}$/.test(data.telephone)) {
+    errors.telephone = "Le numéro doit contenir 9 chiffres";
+  }
 
+  if (!data.mdp) {
+    errors.mdp = "Le mot de passe est obligatoire";
+  } else if (data.mdp.length < 6) {
+    errors.mdp = "Le mot de passe doit contenir au moins 6 caractères";
+  }
 
+  return errors;
+}
+
+function showError(inputId, message) {
+  const input = document.querySelector(`#${inputId}`);
+  const existingError = input.parentElement.querySelector('.error-message');
+  
+  if (existingError) {
+    existingError.remove();
+  }
+
+  input.style.border = "1px solid red";
+  
+  const errorDiv = createElement("div", {
+    class: ["text-red-500", "text-sm", "mt-1", "error-message"]
+  }, [message]);
+  
+  input.parentElement.appendChild(errorDiv);
+}
+
+function clearErrors() {
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.style.border = "1px solid #e2e8f0";
+    const errorDiv = input.parentElement.querySelector('.error-message');
+    if (errorDiv) {
+      errorDiv.remove();
+    }
+  });
+}
 
 export{formulaireInscription}
 

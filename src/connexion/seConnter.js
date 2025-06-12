@@ -105,5 +105,94 @@ const formulaireConnexion = createElement('form', {
   }, ['Se connecter'])
 ]);
 
+function validateForm(numero, password) {
+  const errors = {};
+  
+  if (!numero) {
+    errors.numero = "Le numéro de téléphone est obligatoire";
+  } else if (!/^[0-9]{9}$/.test(numero)) {
+    errors.numero = "Le numéro doit contenir 9 chiffres";
+  }
+
+  if (!password) {
+    errors.password = "Le mot de passe est obligatoire";
+  }
+
+  return errors;
+}
+
+function showError(inputId, message) {
+  const input = document.querySelector(`#${inputId}`);
+  const existingError = input.parentElement.querySelector('.error-message');
+  
+  if (existingError) {
+    existingError.remove();
+  }
+
+  input.style.border = "1px solid red";
+  
+  const errorDiv = createElement("div", {
+    class: ["text-red-500", "text-sm", "mt-1", "error-message"]
+  }, [message]);
+  
+  input.parentElement.appendChild(errorDiv);
+}
+
+function clearErrors() {
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.style.border = "1px solid #e2e8f0";
+    const errorDiv = input.parentElement.querySelector('.error-message');
+    if (errorDiv) {
+      errorDiv.remove();
+    }
+  });
+}
+
+// Modifier le onclick du bouton de connexion
+createElement('button', {
+  type: 'submit',
+  class: [
+    'w-full', 'bg-green-500', 'hover:bg-green-600', 'text-white',
+    'font-semibold', 'py-3', 'px-4', 'rounded-lg', 'transition-colors',
+    'duration-200', 'focus:outline-none', 'focus:ring-2',
+    'focus:ring-green-500', 'focus:ring-offset-2'
+  ], 
+  onclick: async(e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const numero = document.querySelector('#inputnum').value.trim();
+    const password = document.querySelector('#inputmdp').value.trim();
+
+    const errors = validateForm(numero, password);
+    
+    if (Object.keys(errors).length > 0) {
+      if (errors.numero) showError('inputnum', errors.numero);
+      if (errors.password) showError('inputmdp', errors.password);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${basse_url}/utilisateurs`);
+      const utilisateurs = await response.json();
+      
+      const utilisateurTrouver = utilisateurs.find(u =>
+        u.telephone === numero && u.mdp === password
+      );
+
+      if (utilisateurTrouver) {
+        localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
+        conteneur();
+      } else {
+        showError('inputnum', "Numéro ou mot de passe incorrect");
+        showError('inputmdp', "Numéro ou mot de passe incorrect");
+      }
+    } catch(error) {
+      showError('inputnum', "Erreur de connexion au serveur");
+    }
+  }
+}, ['Se connecter'])
+
 export{formulaireConnexion}
 // export{utilisateurTrouver}
