@@ -68,7 +68,7 @@ const quatreIcon = createElement(
       ]
     ),
 
-       createElement("button", {
+      createElement("button", {
       class: iconeComple,
       onclick: () => {
         toggleAffichage("listContact");
@@ -259,8 +259,8 @@ const popupParametres = createElement("div", {
         "hover:bg-gray-50", "transition-colors", "duration-150"
       ],
       onClick: () => {
-        localStorage.removeItem("utilisateurConnecte");
-        window.location.reload();
+        // localStorage.removeItem("utilisateurConnecte");
+        // window.location.reload();
       }
     }, [
       createElement("div", {

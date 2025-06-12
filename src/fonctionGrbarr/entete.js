@@ -1,5 +1,6 @@
 import { createElement } from "../compenent";
 import { basse_url } from "../validateur/fonctionValidate.js";
+import { handleNouveauContact } from "./nouveauContact.js";
 
 // État du menu
 let isMenuOpen = false;
@@ -46,7 +47,6 @@ async function chargerContacts() {
   }
 }
 
-// Fonction pour mettre à jour la liste des contacts dans l'interface
 function updateContactList() {
   const contactList = document.querySelector('#contact-list');
   if (contactList) {
@@ -89,7 +89,6 @@ function toggleContactSelection() {
   }
 }
 
-// Fermer le menu si on clique à l'extérieur
 document.addEventListener('click', function(e) {
   const menuContainer = document.querySelector('#menu-container');
   const popup = document.querySelector('#menu-popup');
@@ -99,7 +98,6 @@ document.addEventListener('click', function(e) {
     isMenuOpen = false;
   }
   
-  // Fermer l'interface de contacts si on clique à l'extérieur
   const contactContainer = document.querySelector('#contact-selection-container');
   const contactPopup = document.querySelector('#contact-selection-popup');
   if (contactContainer && contactPopup && !contactContainer.contains(e.target) && isContactSelectionOpen) {
@@ -109,7 +107,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Fonction pour créer un contact
 function createContactItem(contact) {
   return createElement("div", {
     class: [
@@ -156,7 +153,6 @@ const entete1 = createElement("div", {
 }, [
   createElement("h3", { class: ["text-xl", "font-semibold"] }, ["Discussions"]),
   createElement("div", { class: ["flex", "gap-2"] }, [
-    // Container pour l'icône QR code avec l'interface de sélection
     createElement("div", {
       id: "contact-selection-container",
       class: ["relative"]
@@ -166,7 +162,6 @@ const entete1 = createElement("div", {
         onClick: toggleContactSelection
       }, []),
       
-      // Interface popup de sélection de contacts
       createElement("div", {
         id: "contact-selection-popup",
         class: [
@@ -174,7 +169,6 @@ const entete1 = createElement("div", {
           "flex", "flex-col", "w-[35%]", "ml-[4%]"
         ]
       }, [
-        // Header
         createElement("div", {
           class: [
             "flex", "items-center", "px-4", "py-4", "bg-gray-100", 
@@ -191,7 +185,6 @@ const entete1 = createElement("div", {
           }, ["Nouvelle discussion"])
         ]),
         
-        // Barre de recherche
         createElement("div", {
           class: ["px-4", "py-3", "bg-gray-100", "border-b", "border-gray-300"]
         }, [
@@ -213,7 +206,6 @@ const entete1 = createElement("div", {
           ])
         ]),
         
-        // Options de création
         createElement("div", {
           class: ["bg-gray-100"]
         }, [
@@ -222,7 +214,8 @@ const entete1 = createElement("div", {
             class: [
               "flex", "items-center", "px-4", "py-3", "hover:bg-gray-200", 
               "cursor-pointer", "transition-colors", "duration-150"
-            ]
+            ],
+            onClick: handleNouveauContact
           }, [
             createElement("div", {
               class: [

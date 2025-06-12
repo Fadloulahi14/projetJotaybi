@@ -8,21 +8,21 @@ const entete1 = createElement("div", {
     "px-6", "bg-white", "shadow-sm", "border-b", "border-gray-100"
   ]
 }, [
-  // En-tête avec titre
+ 
   createElement("h3", { 
     class: ["text-xl", "font-semibold", "text-gray-800", "tracking-wide"] 
   }, ["Discussions"]),
 
-  // Container des icônes
+
   createElement("div", { 
     class: ["flex", "gap-4", "items-center"] 
   }, [
-    // Section QR Code et sélection contacts
+   
     createElement("div", {
       id: "contact-selection-container",
       class: ["relative"]
     }, [
-      // Icône QR Code
+     
       createElement("button", { 
         class: [
           "p-2", "rounded-full", "hover:bg-gray-100",
@@ -35,7 +35,7 @@ const entete1 = createElement("div", {
         }, [])
       ]),
       
-      // Popup de sélection des contacts
+   
       createElement("div", {
         id: "contact-selection-popup",
         class: [
@@ -44,7 +44,6 @@ const entete1 = createElement("div", {
           "shadow-xl", "rounded-lg", "overflow-hidden"
         ]
       }, [
-        // En-tête du popup
         createElement("div", {
           class: [
             "flex", "items-center", "px-6", "py-4", 
@@ -68,7 +67,6 @@ const entete1 = createElement("div", {
           }, ["Nouvelle discussion"])
         ]),
         
-        // Barre de recherche
         createElement("div", {
           class: ["px-4", "py-3", "bg-white", "border-b"]
         }, [
@@ -93,11 +91,9 @@ const entete1 = createElement("div", {
           ])
         ]),
         
-        // Options de création
         createElement("div", {
           class: ["bg-white", "py-2"]
         }, [
-          // Nouveau contact
           createElement("button", {
             class: [
               "flex", "items-center", "w-full", "px-6", "py-3",
@@ -120,7 +116,6 @@ const entete1 = createElement("div", {
             }, ["Nouveau contact"])
           ]),
           
-          // Nouvelle communauté  
           createElement("button", {
             class: [
               "flex", "items-center", "w-full", "px-6", "py-3",
@@ -144,7 +139,6 @@ const entete1 = createElement("div", {
           ])
         ]),
         
-        // Liste des contacts
         createElement("div", {
           class: ["flex-1", "overflow-y-auto"]
         }, [
@@ -164,7 +158,6 @@ const entete1 = createElement("div", {
       ])
     ]),
     
-    // Menu
     createElement("div", {
       id: "menu-container",
       class: ["relative"]
@@ -181,7 +174,6 @@ const entete1 = createElement("div", {
         }, [])
       ]),
       
-      // Menu popup
       createElement("div", {
         id: "menu-popup",
         class: [
@@ -190,7 +182,6 @@ const entete1 = createElement("div", {
           "border", "border-gray-100", "py-1", "overflow-hidden"
         ]
       }, [
-        // Options du menu
         createElement("button", {
           class: [
             "flex", "items-center", "w-full", "px-4", "py-3",
@@ -206,7 +197,6 @@ const entete1 = createElement("div", {
           }, ["Nouveau groupe"])
         ]),
         
-        // Autres options similaires...
       ])
     ])
   ])

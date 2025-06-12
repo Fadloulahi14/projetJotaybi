@@ -4,7 +4,6 @@ import { header } from "./tete.js";
 import { navigationTabs } from "./navig.js";
 import { formulaireInscription } from "./inscrip.js";
 import { formulaireConnexion } from "./seConnter.js";
-import { footer } from "./piedpage.js";
 
 const mainContainer = createElement('div', {
   class: [
@@ -26,6 +25,4 @@ const mainContainer = createElement('div', {
   ])
 ]);
 
-
-
-export{mainContainer}
+export { mainContainer }

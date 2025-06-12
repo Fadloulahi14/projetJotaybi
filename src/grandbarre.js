@@ -1,6 +1,6 @@
 import "./style.css";
 import { createElement } from "./compenent.js";
-import { chargerConversations, listeConversations } from "./fonctionGrbarr/conversation.js";
+import { conversationManager } from "./fonctionGrbarr/conversation.js";
 import { entete1 } from "./fonctionGrbarr/entete.js";
 
 const recherche = createElement("div", {
@@ -71,8 +71,9 @@ const grandBr = createElement("div", {
   entete1, 
   recherche,
   onglets,
-  listeConversations
+  conversationManager.listeConversations
 ]);
 
-chargerConversations();
+conversationManager.init();
+
 export { grandBr };

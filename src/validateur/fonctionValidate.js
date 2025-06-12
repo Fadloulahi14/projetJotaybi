@@ -1,6 +1,5 @@
 
-
-export function affichage(){
+ function affichage(){
     form.classList.remove("hide");
 }
 
