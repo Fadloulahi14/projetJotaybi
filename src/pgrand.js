@@ -1,9 +1,79 @@
 import "./style.css";
 import { createElement } from "./compenent.js";
-import { messagesConversation, } from "./consts.js";
 import { state } from "./store.js";
 import { basse_url } from "./validateur/fonctionValidate.js";
 
+// Fonction pour charger les messages
+async function loadMessages() {
+  const messagesList = document.querySelector('#messages-list');
+  if (!messagesList || !state.selectedContact) return;
+
+  try {
+    const moi = JSON.parse(localStorage.getItem('utilisateurConnecte'));
+    const response = await fetch(`${basse_url}/messages`);
+    const allMessages = await response.json();
+
+    const conversationMessages = allMessages.filter(m => 
+      (m.emetteur === moi.id && m.recepteur === state.selectedContact.id) ||
+      (m.emetteur === state.selectedContact.id && m.recepteur === moi.id)
+    ).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    messagesList.innerHTML = '';
+    
+    conversationMessages.forEach(msg => {
+      const isMe = msg.emetteur === moi.id;
+      const messageElement = createElement('div', {
+        class: ["flex", isMe ? "justify-end" : "justify-start", "mb-2"]
+      }, [
+        createElement('div', {
+          class: [
+            "max-w-xs", "px-3", "py-2", "rounded-lg",
+            isMe ? "bg-green-500 text-white" : "bg-white text-gray-800",
+            "shadow-sm"
+          ]
+        }, [
+          createElement('span', { 
+            class: ["text-sm"] 
+          }, [msg.contenu]),
+          createElement('div', {
+            class: ["text-xs", "mt-1", "opacity-70", "text-right"]
+          }, [
+            new Date(msg.date).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          ])
+        ])
+      ]);
+      
+      messagesList.appendChild(messageElement);
+    });
+
+    messagesList.scrollTop = messagesList.scrollHeight;
+  } catch (error) {
+    console.error('Erreur chargement messages:', error);
+  }
+}
+
+// Ajouter la fonction de rafraîchissement automatique
+let refreshInterval;
+
+function startAutoRefresh() {
+  // Arrêter l'intervalle existant si présent
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+  }
+  // Rafraîchir toutes les 3 secondes
+  refreshInterval = setInterval(loadMessages, 3000);
+}
+
+function stopAutoRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+  }
+}
+
+// Créer l'en-tête de la conversation
 const header = createElement('div', {
   class: ["w-full", "h-16", "border-b", "border-gray-200", "flex", "items-center", "justify-between", "px-4", "bg-white"]
 }, [
@@ -39,6 +109,8 @@ const messagesList = createElement('div', {
   class: ["flex-1", "overflow-y-auto", "px-4", "py-4", "space-y-4", "bg-[#f0f2f5]"]
 }, []);
 
+
+// Modifier le footer pour inclure la fonction loadMessages
 const footer = createElement('div', {
   class: ["w-full", "h-16", "bg-white", "border-t", "border-gray-200", "flex", "items-center", "gap-3", "px-4"]
 }, [
@@ -89,7 +161,7 @@ const footer = createElement('div', {
         });
 
         input.value = '';
-        loadMessages();
+        await loadMessages(); // Charger immédiatement les nouveaux messages
       } catch (error) {
         console.error('Erreur envoi message:', error);
       }
@@ -99,9 +171,19 @@ const footer = createElement('div', {
   ])
 ]);
 
+// Modifier le state pour gérer le rafraîchissement
+state.onContactSelected = (contact) => {
+  state.selectedContact = contact;
+  loadMessages();
+  startAutoRefresh();
+};
+
+// Nettoyer l'intervalle quand l'utilisateur quitte la page
+window.addEventListener('beforeunload', stopAutoRefresh);
+
 const pgrandBr = createElement("div", {
   id: "bare2",
   class: ["flex-1", "h-full", "flex", "flex-col", "bg-[#f0f2f5]"]
 }, [header, messagesList, footer]);
 
-export  {pgrandBr};
+export { pgrandBr };

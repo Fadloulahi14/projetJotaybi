@@ -1,11 +1,15 @@
 export const state = {
   selectedContact: null,
-  messages: []
+  messages: [],
+  onContactSelected: null
 };
 
 export const selectContact = (contact) => {
   state.selectedContact = contact;
   updateHeader();
+  if (state.onContactSelected) {
+    state.onContactSelected(contact);
+  }
 };
 
 export const updateHeader = () => {
