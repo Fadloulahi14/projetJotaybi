@@ -1,6 +1,8 @@
 import "./style.css";
 import { createElement } from "./compenent.js";
 import { AjouterContact, afficherContacts, afficherInterfaceGroupes, toggleAffichage} from "./mesFunction.js"
+import { statutManager } from "./fonctionGrbarr/statutManager.js";
+import { profilManager } from "./fonctionGrbarr/profilManager.js";
 
 // Récupérer l'utilisateur connecté
 const utilisateurTrouver = JSON.parse(localStorage.getItem("utilisateurConnecte")) || {
@@ -70,12 +72,11 @@ const quatreIcon = createElement(
 
       createElement("button", {
       class: iconeComple,
-      onclick: () => {
-        toggleAffichage("listContact");
-        afficherContacts()
-      }
+      onclick: () => statutManager.toggleStatut()
     }, [
-      createElement("i", { class: ['bxr' , 'bx-circle-outer-dashed-circle'] }, []),
+      createElement("i", { class: ['bxr' , 'bx-circle-outer-dashed-circle'],
+        // onclick: () => statutManager.toggleStatut()
+       }, []),
       createElement("p", { }, []),
     ]),
 
@@ -120,7 +121,9 @@ const iconeEtphoto = createElement('div',{
             }, [])
         ]),
         createElement("div", {
-            class: ["w-[50px]", "h-[50px]", "rounded-full", "flex", "justify-center", "items-center", "border", "border-white-500", "cursor-pointer"]
+            class: ["w-[50px]", "h-[50px]", "rounded-full", "flex", "justify-center", "items-center", "border", "border-white-500", "cursor-pointer"],
+            id: "profile-photo",
+            onClick: () => profilManager.toggleProfil()
         }, [
             createElement("img", {
                 src: "",

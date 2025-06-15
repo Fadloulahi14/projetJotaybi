@@ -4,6 +4,8 @@ import { barLogo, popupParametres } from "./barreLogo.js";
 import { grandBr } from "./grandbarre.js";
 import { pgrandBr } from "./pgrand.js";
 import { mainContainer } from "./connexion/connexion.js";
+import { statutManager } from "./fonctionGrbarr/statutManager.js";
+import { profilManager } from "./fonctionGrbarr/profilManager.js";
 
 // Vérifier l'état de connexion au chargement
 function checkAuthState() {
@@ -87,4 +89,10 @@ export function affichageconnexion() {
   form?.classList.add("hide");
   form2?.classList.remove("hide", "bg-white");
 }
+
+// Initialiser le gestionnaire de statuts
+statutManager.init();
+
+// Initialiser le gestionnaire de profil
+profilManager.init();
 
