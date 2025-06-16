@@ -2,6 +2,8 @@ import "./style.css";
 import { createElement } from "./compenent.js";
 import { state } from "./store.js";
 import { basse_url } from "./validateur/fonctionValidate.js";
+import { groupeConversationManager } from "./fonctionGrbarr/groupeConversation.js";
+import { conversationManager } from "./fonctionGrbarr/conversation.js";
 
 // Fonction pour charger les messages
 async function loadMessages() {
@@ -59,12 +61,15 @@ async function loadMessages() {
 let refreshInterval;
 
 function startAutoRefresh() {
-  // Arrêter l'intervalle existant si présent
   if (refreshInterval) {
     clearInterval(refreshInterval);
   }
-  // Rafraîchir toutes les 3 secondes
-  refreshInterval = setInterval(loadMessages, 3000);
+  
+  refreshInterval = setInterval(() => {
+    if (state.selectedContact && state.selectedContact.type !== 'groupe') {
+      loadMessages();
+    }
+  }, 3000);
 }
 
 function stopAutoRefresh() {
@@ -146,22 +151,34 @@ const footer = createElement('div', {
       const moi = JSON.parse(localStorage.getItem('utilisateurConnecte'));
       
       try {
-        await fetch(`${basse_url}/messages`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            emetteur: moi.id,
-            recepteur: state.selectedContact.id,
-            contenu: message,
-            date: new Date().toISOString(),
-            lu: false
-          })
-        });
+        if (state.selectedContact.type === 'groupe') {
+          await groupeConversationManager.sendGroupMessage(
+            state.selectedContact.id,
+            message
+          );
 
-        input.value = '';
-        await loadMessages(); // Charger immédiatement les nouveaux messages
+          // Rafraîchir les conversations après l'envoi
+          await conversationManager.chargerConversations();
+        } else {
+          await fetch(`${basse_url}/messages`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              emetteur: moi.id,
+              recepteur: state.selectedContact.id,
+              contenu: message,
+              date: new Date().toISOString(),
+              lu: false
+            })
+          });
+
+          input.value = '';
+          await loadMessages();
+          // Rafraîchir les conversations après l'envoi
+          await conversationManager.chargerConversations();
+        }
       } catch (error) {
         console.error('Erreur envoi message:', error);
       }

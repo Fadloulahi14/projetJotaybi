@@ -309,9 +309,35 @@ class GroupeManager {
       });
 
       if (response.ok) {
+        const newGroup = await response.json();
+        
+        // Stocker le groupe localement
+        const groupesLocaux = JSON.parse(localStorage.getItem('groupesUtilisateur') || '[]');
+        groupesLocaux.push(newGroup);
+        localStorage.setItem('groupesUtilisateur', JSON.stringify(groupesLocaux));
+
         this.toggleGroupe();
-        // Rafraîchir la liste des conversations
-        window.dispatchEvent(new CustomEvent('groupeCreated'));
+        
+        // Actualiser les conversations
+        await conversationManager.chargerConversations();
+
+        // Préparer les données du groupe pour l'affichage
+        const groupData = {
+          id: newGroup.id,
+          nom: newGroup.nom,
+          type: 'groupe',
+          membres: newGroup.membres,
+          admin: newGroup.admin,
+          messages: newGroup.messages || []
+        };
+
+        // Mettre à jour le state et charger les messages du groupe
+        state.selectedContact = groupData;
+        groupeConversationManager.currentGroup = groupData;
+        await groupeConversationManager.loadGroupMessages(newGroup.id);
+
+        // Émettre un événement personnalisé pour indiquer la création du groupe
+        window.dispatchEvent(new CustomEvent('groupeCreated', { detail: groupData }));
       }
     } catch (error) {
       console.error("Erreur création groupe:", error);
