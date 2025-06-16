@@ -1,6 +1,7 @@
 import { createElement } from "../compenent";
 import { basse_url } from "../validateur/fonctionValidate.js";
 import { handleNouveauContact } from "./nouveauContact.js";
+import { groupeManager } from "./groupeManager.js";
 
 // État du menu
 let isMenuOpen = false;
@@ -321,6 +322,7 @@ const entete1 = createElement("div", {
           ],
           onClick: () => {
             toggleMenu();
+            groupeManager.toggleGroupe();
           }
         }, [
           createElement("i", {
@@ -367,6 +369,8 @@ const entete1 = createElement("div", {
           ],
           onClick: () => {
             toggleMenu();
+             localStorage.removeItem("utilisateurConnecte");
+              window.location.reload();
           }
         }, [
           createElement("i", {

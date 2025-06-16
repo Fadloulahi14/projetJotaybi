@@ -97,10 +97,6 @@ const quatreIcon = createElement(
       createElement("i", { class: ["fa-solid", "fa-users"] }, []),
       createElement("p", {  }, []),
     ]), 
-
-    
-
-    
   ]
 );
 

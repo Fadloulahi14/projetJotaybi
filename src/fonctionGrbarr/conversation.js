@@ -54,11 +54,12 @@ class ConversationManager {
   }
 
   afficherErreur() {
-    this.listeConversations.innerHTML = `
-      <div class="flex items-center justify-center h-full text-red-500">
-        Une erreur est survenue
-      </div>
-    `;
+    this.listeConversations.createElement('div',{class:["flex items-center justify-center h-full text-red-500"]}, ["une erreure est survenue"])
+    // `
+    //   <div class="flex items-center justify-center h-full text-red-500">
+    //     Une erreur est survenue
+    //   </div>
+    // `;
   }
 
   renderConversations(contacts, messages, moi) {
