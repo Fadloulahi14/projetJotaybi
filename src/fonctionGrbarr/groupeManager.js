@@ -263,7 +263,7 @@ class GroupeManager {
       this.selectedContacts.push(contact);
     } else {
       this.selectedContacts.splice(index, 1);
-    }
+    } 
 
     // Rafraîchir l'affichage des contacts
     this.renderContacts();

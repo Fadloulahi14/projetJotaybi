@@ -1,9 +1,88 @@
-import { createElement } from "../compenent";
-import {conteneur} from "../main.js";
-import {  basse_url } from "../validateur/fonctionValidate.js";
+import { createElement } from "../compenent.js";
+import { conteneur } from "../main.js";
+import { basse_url } from "../validateur/fonctionValidate.js";
+import { barLogo } from "../barreLogo.js";
+import { grandBr } from "../grandbarre.js";
+import { pgrandBr } from "../pgrand.js";
+import { statutManager } from "../fonctionGrbarr/statutManager.js";
+import { profilManager } from "../fonctionGrbarr/profilManager.js";
+import { groupeManager } from "../fonctionGrbarr/groupeManager.js";
+import { conversationManager } from "../fonctionGrbarr/conversation.js";
+
+// Fonction pour démarrer le rafraîchissement automatique
+function startAutoRefresh() {
+  setInterval(() => {
+    if (localStorage.getItem("utilisateurConnecte")) {
+      conversationManager.chargerConversations();
+    }
+  }, 3000);
+}
+
 const formulaireConnexion = createElement('form', {
   class: ['space-y-6', 'w-full'], 
-  id:"connexion"
+  id: "connexion",
+  onsubmit: async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const numero = document.querySelector('#inputnum').value.trim();
+    const password = document.querySelector('#inputmdp').value.trim();
+
+    const errors = validateForm(numero, password);
+    
+    if (Object.keys(errors).length > 0) {
+      if (errors.numero) showError('inputnum', errors.numero);
+      if (errors.password) showError('inputmdp', errors.password);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${basse_url}/utilisateurs`);
+      if (!response.ok) {
+        throw new Error('Erreur réseau');
+      }
+
+      const utilisateurs = await response.json();
+      const utilisateurTrouver = utilisateurs.find(u =>
+        u.telephone === numero && u.mdp === password
+      );
+
+      if (utilisateurTrouver) {
+        // Stocker les données utilisateur
+        localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
+
+        // Créer et afficher le conteneur principal sans rechargement
+        const main = document.querySelector('#app');
+        const newContaineur = createElement(
+          "div",
+          {
+            class: ["flex", "w-full", "h-screen", "bg-white"],
+            id: "containeur",
+          },
+          [barLogo, grandBr, pgrandBr]
+        );
+
+        main.innerHTML = '';
+        main.appendChild(newContaineur);
+
+        // Initialiser les gestionnaires
+        statutManager.init();
+        profilManager.init();
+        groupeManager.init();
+        conversationManager.init();
+
+        // Démarrer le rafraîchissement automatique
+        startAutoRefresh();
+
+      } else {
+        showError('inputnum', "Numéro ou mot de passe incorrect");
+        showError('inputmdp', "Numéro ou mot de passe incorrect");
+      }
+    } catch(error) {
+      console.error('Erreur connexion:', error);
+      showError('inputnum', "Erreur de connexion au serveur. Veuillez réessayer.");
+    }
+  }
 }, [
   
   createElement('div', { class: ['space-y-2'] }, [
@@ -69,39 +148,97 @@ const formulaireConnexion = createElement('form', {
     ], 
     onclick: async(e) => {
         e.preventDefault();
+        clearErrors();
 
         const numero = document.querySelector('#inputnum').value.trim();
-        const code = document.querySelector('#inputmdp').value.trim()
+        const password = document.querySelector('#inputmdp').value.trim();
 
-      try{
-
-        const response = await fetch(`${basse_url}/utilisateurs`);
-        const utilisateurs = await response.json();
-
+        const errors = validateForm(numero, password);
         
-        const utilisateurTrouver = utilisateurs.find(u=>
-          u.telephone === numero && u.mdp === code
-        );
-        if(utilisateurTrouver){
-          localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
-          conteneur()
-         
-
-        }else{
-          console.log("ligua dougal bakhoul")
-           document.querySelector('#inputnum').style.border="1px solid red"
-           const code = document.querySelector('#inputmdp').style.border="1px solid red"
-           return
+        if (Object.keys(errors).length > 0) {
+          if (errors.numero) showError('inputnum', errors.numero);
+          if (errors.password) showError('inputmdp', errors.password);
+          return;
         }
 
+        try {
+          // Récupérer les utilisateurs
+          const response = await fetch(`${basse_url}/utilisateurs`);
+          const utilisateurs = await response.json();
+          
+          const utilisateurTrouver = utilisateurs.find(u =>
+            u.telephone === numero && u.mdp === password
+          );
 
+          if (utilisateurTrouver) {
+            // Stocker les données utilisateur
+            localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
+            
+            // Récupérer les conversations et messages
+            const [messages, groupes] = await Promise.all([
+              fetch(`${basse_url}/messages`).then(res => res.json()),
+              fetch(`${basse_url}/groupes`).then(res => res.json())
+            ]);
 
-      }catch(error){
-        console.log('erreurb serveur ')
+            // Stocker les messages de l'utilisateur
+            localStorage.setItem("messagesUtilisateur", JSON.stringify(
+              messages.filter(m => 
+                m.emetteur === utilisateurTrouver.id || 
+                m.recepteur === utilisateurTrouver.id
+              )
+            ));
 
+            // Stocker les groupes de l'utilisateur - Correction ici
+            localStorage.setItem("groupesUtilisateur", JSON.stringify(
+              groupes.filter(g => 
+                g.participants && g.participants.includes(utilisateurTrouver.id)
+              )
+            ));
+
+            // Créer le conteneur principal
+            conteneur();
+
+            // Cacher le formulaire de connexion
+            const loginForm = document.querySelector('#connexion');
+            if (loginForm) {
+              loginForm.classList.add('hide');
+            }
+
+            // Créer et afficher le conteneur principal sans rechargement
+            const main = document.querySelector('#app');
+            const newContaineur = createElement(
+              "div",
+              {
+                class: ["flex", "w-full", "h-screen", "bg-white"],
+                id: "containeur",
+              },
+              [barLogo, grandBr, pgrandBr]
+            );
+
+            main.innerHTML = '';
+            main.appendChild(newContaineur);
+
+            // Initialiser les gestionnaires
+            statutManager.init();
+            profilManager.init();
+            groupeManager.init();
+            conversationManager.init();
+
+            // Déclencher le chargement des conversations
+            await conversationManager.chargerConversations();
+
+            // Démarrer le rafraîchissement automatique
+            startAutoRefresh();
+
+          } else {
+            showError('inputnum', "Numéro ou mot de passe incorrect");
+            showError('inputmdp', "Numéro ou mot de passe incorrect");
+          }
+        } catch(error) {
+          console.error('Erreur connexion:', error);
+          showError('inputnum', "Erreur de connexion au serveur");
+        }
       }
-      
-    }
   }, ['Se connecter'])
 ]);
 
@@ -174,6 +311,7 @@ createElement('button', {
     }
 
     try {
+      // Récupérer les utilisateurs
       const response = await fetch(`${basse_url}/utilisateurs`);
       const utilisateurs = await response.json();
       
@@ -182,13 +320,71 @@ createElement('button', {
       );
 
       if (utilisateurTrouver) {
+        // Stocker les données utilisateur
         localStorage.setItem("utilisateurConnecte", JSON.stringify(utilisateurTrouver));
+        
+        // Récupérer les conversations et messages
+        const [messages, groupes] = await Promise.all([
+          fetch(`${basse_url}/messages`).then(res => res.json()),
+          fetch(`${basse_url}/groupes`).then(res => res.json())
+        ]);
+
+        // Stocker les messages de l'utilisateur
+        localStorage.setItem("messagesUtilisateur", JSON.stringify(
+          messages.filter(m => 
+            m.emetteur === utilisateurTrouver.id || 
+            m.recepteur === utilisateurTrouver.id
+          )
+        ));
+
+        // Stocker les groupes de l'utilisateur - Correction ici
+        localStorage.setItem("groupesUtilisateur", JSON.stringify(
+          groupes.filter(g => 
+            g.participants && g.participants.includes(utilisateurTrouver.id)
+          )
+        ));
+
+        // Créer le conteneur principal
         conteneur();
+
+        // Cacher le formulaire de connexion
+        const loginForm = document.querySelector('#connexion');
+        if (loginForm) {
+          loginForm.classList.add('hide');
+        }
+
+        // Créer et afficher le conteneur principal sans rechargement
+        const main = document.querySelector('#app');
+        const newContaineur = createElement(
+          "div",
+          {
+            class: ["flex", "w-full", "h-screen", "bg-white"],
+            id: "containeur",
+          },
+          [barLogo, grandBr, pgrandBr]
+        );
+
+        main.innerHTML = '';
+        main.appendChild(newContaineur);
+
+        // Initialiser les gestionnaires
+        statutManager.init();
+        profilManager.init();
+        groupeManager.init();
+        conversationManager.init();
+
+        // Déclencher le chargement des conversations
+        await conversationManager.chargerConversations();
+
+        // Démarrer le rafraîchissement automatique
+        startAutoRefresh();
+
       } else {
         showError('inputnum', "Numéro ou mot de passe incorrect");
         showError('inputmdp', "Numéro ou mot de passe incorrect");
       }
     } catch(error) {
+      console.error('Erreur connexion:', error);
       showError('inputnum', "Erreur de connexion au serveur");
     }
   }
