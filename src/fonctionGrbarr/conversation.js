@@ -115,32 +115,50 @@ class ConversationManager {
       const element = createElement("div", {
         class: [
           "flex", "items-center", "gap-3", "px-4", "py-3",
-          "hover:bg-gray-50", "cursor-pointer", "border-b", "border-gray-100"
+          "hover:bg-gray-50", "cursor-pointer", "border-b", "border-gray-100",
+          "relative" // Ajout de relative pour positionner le badge
         ],
-        onClick: () => {
+        onClick: async () => {
           selectContact(conv);
           if (conv.type === 'groupe') {
-            groupeConversationManager.loadGroupMessages(conv.id);
+            await groupeConversationManager.loadGroupMessages(conv.id);
           } else {
-            this.loadMessages(conv.id);
+            await this.loadMessages(conv.id);
           }
+          // Après avoir chargé les messages, on rafraîchit les conversations
+          await this.chargerConversations();
         }
       }, [
-        // Avatar
+        // Avatar avec badge de notification
         createElement("div", {
-          class: [
-            "w-12", "h-12", "rounded-full",
-            conv.type === 'groupe' ? "bg-green-100" : "bg-gray-300",
-            "flex-shrink-0", "flex", "items-center", "justify-center"
-          ]
+          class: ["relative"] // Container pour l'avatar et le badge
         }, [
-          createElement("i", {
+          // Avatar
+          createElement("div", {
             class: [
-              "fas",
-              conv.type === 'groupe' ? "fa-users" : "fa-user",
-              conv.type === 'groupe' ? "text-green-600" : "text-gray-600"
+              "w-12", "h-12", "rounded-full",
+              conv.type === 'groupe' ? "bg-green-100" : "bg-gray-300",
+              "flex-shrink-0", "flex", "items-center", "justify-center"
             ]
-          })
+          }, [
+            createElement("i", {
+              class: [
+                "fas",
+                conv.type === 'groupe' ? "fa-users" : "fa-user",
+                conv.type === 'groupe' ? "text-green-600" : "text-gray-600"
+              ]
+            })
+          ]),
+          // Badge de notification (affiché uniquement s'il y a des messages non lus)
+          (conv.nonLus > 0) && createElement("div", {
+            class: [
+              "absolute", "-top-1", "-right-1",
+              "bg-green-500", "text-white",
+              "rounded-full", "w-5", "h-5",
+              "flex", "items-center", "justify-center",
+              "text-xs", "font-medium"
+            ]
+          }, [conv.nonLus.toString()])
         ]),
         
         // Infos conversation
@@ -188,6 +206,21 @@ class ConversationManager {
         (m.emetteur === moi.id && m.recepteur === contactId) ||
         (m.emetteur === contactId && m.recepteur === moi.id)
       ).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Marquer les messages comme lus
+      const unreadMessages = conversationMessages.filter(m => 
+        m.emetteur === contactId && !m.lu
+      );
+
+      if (unreadMessages.length > 0) {
+        await Promise.all(unreadMessages.map(msg =>
+          fetch(`${basse_url}/messages/${msg.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lu: true })
+          })
+        ));
+      }
 
       if (messagesList) {
         messagesList.innerHTML = '';
