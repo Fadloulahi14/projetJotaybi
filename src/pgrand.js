@@ -4,6 +4,7 @@ import { state } from "./store.js";
 import { basse_url } from "./validateur/fonctionValidate.js";
 import { groupeConversationManager } from "./fonctionGrbarr/groupeConversation.js";
 import { conversationManager } from "./fonctionGrbarr/conversation.js";
+import { conversationMenuManager } from "./fonctionGrbarr/conversationMenu.js";
 
 // Fonction pour charger les messages
 async function loadMessages() {
@@ -103,8 +104,25 @@ const header = createElement('div', {
      createElement('i', {class: ["fa-solid", "fa-phone"]}, []),
    ]),
     
-   createElement('div', {class: [ "w-8", "h-8", "rounded-full", "border", "border-gray-300", "text-gray-600", "flex", "items-center", "justify-center", "cursor-pointer", "hover:bg-gray-200", "text-black-500"]}, [
-     createElement('i', {class: ["fa-solid", "fa-ellipsis-vertical"]}, []),
+   createElement('div', {
+    class: [ 
+      "w-8", "h-8", "rounded-full", "border", "border-gray-300", 
+      "text-gray-600", "flex", "items-center", "justify-center", 
+      "cursor-pointer", "hover:bg-gray-200", "text-black-500"
+    ],
+    onClick: (e) => {
+      e.stopPropagation();
+      if (state.selectedContact) {
+        conversationMenuManager.showMenu(
+          state.selectedContact.type,
+          state.selectedContact
+        );
+      }
+    }
+  }, [
+     createElement('i', {
+      class: ["fa-solid", "fa-ellipsis-vertical"]
+    }, [])
    ])
   ])
 ]);
