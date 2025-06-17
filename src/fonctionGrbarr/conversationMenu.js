@@ -395,23 +395,77 @@ class ConversationMenuManager {
   }
 
   async leaveGroup(group) {
-    if (confirm('Voulez-vous vraiment quitter ce groupe ?')) {
-      const moi = JSON.parse(localStorage.getItem('utilisateurConnecte'));
-      try {
-        group.membres = group.membres.filter(id => id !== moi.id);
+    const popup = createElement('div', {
+      class: [
+        "fixed", "inset-0", "bg-black", "bg-opacity-50",
+        "flex", "items-center", "justify-center", "z-50"
+      ]
+    }, [
+      createElement('div', {
+        class: ["bg-white", "w-96", "rounded-lg", "shadow-xl", "overflow-hidden"]
+      }, [
+        // En-tête
+        createElement('div', {
+          class: ["px-6", "py-4", "border-b", "border-gray-200"]
+        }, [
+          createElement('h3', { 
+            class: ["text-lg", "font-semibold"] 
+          }, ["Quitter le groupe"]),
+        ]),
         
-        await fetch(`${basse_url}/groupes/${group.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ membres: group.membres })
-        });
+        // Message
+        createElement('div', {
+          class: ["p-6"]
+        }, [
+          createElement('p', {
+            class: ["text-gray-600"]  
+          }, [`Êtes-vous sûr de vouloir quitter le groupe "${group.nom}" ?`])
+        ]),
+        
+        // Boutons
+        createElement('div', {
+          class: ["px-6", "py-4", "bg-gray-50", "flex", "justify-end", "gap-3"]
+        }, [
+          // Bouton Annuler
+          createElement('button', {
+            class: [
+              "px-4", "py-2", "rounded-lg",
+              "text-gray-600", "hover:bg-gray-100"
+            ],
+            onClick: () => popup.remove()
+          }, ["Annuler"]),
+          
+          // Bouton Quitter
+          createElement('button', {
+            class: [
+              "px-4", "py-2", "rounded-lg", "bg-red-500",
+              "text-white", "hover:bg-red-600"
+            ],
+            onClick: async () => {
+              const moi = JSON.parse(localStorage.getItem('utilisateurConnecte'));
+              try {
+                const updatedMembres = group.membres.filter(id => id !== moi.id);
+                
+                await fetch(`${basse_url}/groupes/${group.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ membres: updatedMembres })
+                });
 
-        await conversationManager.chargerConversations();
-        this.closeMenu();
-      } catch (error) {
-        console.error('Erreur quitter groupe:', error);
-      }
-    }
+                popup.remove();
+                this.closeMenu();
+                await conversationManager.chargerConversations();
+                
+              } catch (error) {
+                console.error('Erreur quitter groupe:', error);
+              }
+            }
+          }, ["Quitter le groupe"])
+        ])
+      ])
+    ]);
+
+    document.body.appendChild(popup);
   }
 
   closeMenu() {
